@@ -1,0 +1,43 @@
+# Thư mục vendor (chứa package Composer)
+/vendor/
+
+# Thư mục node_modules (package frontend)
+/node_modules/
+
+# Các build output và cache
+/public/build/
+/public/hot/
+
+# Thư mục lưu trữ tạm thời và liên kết symbolic
+/public/storage
+/storage/*.key
+/bootstrap/cache/
+
+# File và backup môi trường (env)
+/.env
+/.env.*
+!.env.example  # Giữ lại env mẫu
+
+# Cache của PHPUnit và các file test
+.phpunit.cache
+.phpunit.result.cache
+
+# Các file tạm thời khác
+/phpactor.json
+Homestead.json
+Homestead.yaml
+auth.json
+
+# Log của npm/yarn
+npm-debug.log
+yarn-error.log
+
+# File của các công cụ IDE và môi trường phát triển
+/.idea
+/.vscode
+/.fleet
+/.zed
+
+# MacOS và hệ điều hành khác tạo ra
+.DS_Store
+Thumbs.db
