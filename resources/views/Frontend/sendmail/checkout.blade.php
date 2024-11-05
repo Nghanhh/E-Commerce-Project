@@ -2,6 +2,17 @@
 
 @section('content1')
 <section id="cart_items">
+	@if (session('message'))
+		<div class="alert alert-success">
+			{{ session('message') }}
+		</div>
+	@endif
+
+	@if (session('error'))
+		<div class="alert alert-danger">
+			{{ session('error') }}
+		</div>
+	@endif
 	<div class="container">
 		<div class="breadcrumbs">
 			<ol class="breadcrumb">
@@ -36,19 +47,72 @@
 
 		<div class="shopper-informations">
 			<div class="row">
-				<div class="col-sm-3">
-					<div class="shopper-info">
-						<p>Shopper Information</p>
-						<form>
-							<input type="text" placeholder="Display Name">
-							<input type="text" placeholder="User Name">
-							<input type="password" placeholder="Password">
-							<input type="password" placeholder="Confirm password">
-						</form>
-						<a class="btn btn-primary" href="">Get Quotes</a>
-						<a class="btn btn-primary" href="">Continue</a>
+				@if(!Auth::check())
+					<div class="col-sm-3">
+						<div class="shopper-info">
+							<p>Shopper Information</p>
+							<form method="POST" enctype="multipart/form-data" action="{{ url('/checkout/register') }}">
+								@csrf
+
+								@if(session('success'))
+									<div class="alert alert-success alert-dismissible">
+										<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+										<h4><i class="icon fa fa-check"></i> Notification</h4>
+										{{session('success')}}
+									</div>
+								@endif
+
+								<input type="text" placeholder="Name" name="name" />
+								@error('name')
+									<div class="error">{{ $message }}</div>
+								@enderror
+
+								<input type="email" placeholder="Email Address" name="email"/>
+								@error('email')
+									<div class="error">{{ $message }}</div>
+								@enderror
+
+								<input type="password" placeholder="Password" name="password"/>
+								@error('password')
+									<div class="error">{{ $message }}</div>
+								@enderror
+
+								<input type="text" placeholder="Phone no" name="phone"/>
+								@error('phone')
+									<div class="error">{{ $message }}</div>
+								@enderror
+
+								<input type="file" placeholder="Avatar" name="avatar"/>
+								@error('avatar')
+									<div class="error">{{ $message }}</div>
+								@enderror
+
+								<select class="form-control form-control-line" name="id_country">
+									<option value="">Please select your country</option>
+									<?php
+										foreach($country as $value){
+									?>
+										<option value="{{$value['id']}}">{{$value['name']}}</option>
+									<?php
+										}
+									?>
+								</select>
+
+								@error('id_country')
+									<div class="error">{{ $message }}</div>
+								@enderror
+
+
+								<input type="text" style="display:none" name="level" value="0"/>
+
+								<button type="submit" class="btn btn-primary">Signup</button>
+
+							</form>
+							<a class="btn btn-primary" href="">Get Quotes</a>
+							<a class="btn btn-primary" href="">Continue</a>
+						</div>
 					</div>
-				</div>
+				@endif
 				<div class="col-sm-5 clearfix">
 					<div class="bill-to">
 						<p>Bill To</p>
@@ -124,51 +188,67 @@
 					</tr>
 				</thead>
 				<tbody>
-					<tr>
-						<td class="cart_product">
-							<a href=""><img src="images/cart/one.png" alt=""></a>
-						</td>
-						<td class="cart_description">
-							<h4><a href="">Colorblock Scuba</a></h4>
-							<p>Web ID: 1089772</p>
-						</td>
-						<td class="cart_price">
-							<p>$59</p>
-						</td>
-						<td class="cart_quantity">
-							<div class="cart_quantity_button">
-								<a class="cart_quantity_up" href=""> + </a>
-								<input class="cart_quantity_input" type="text" name="quantity" value="1" autocomplete="off" size="2">
-								<a class="cart_quantity_down" href=""> - </a>
-							</div>
-						</td>
-						<td class="cart_total">
-							<p class="cart_total_price">$59</p>
-						</td>
-						<td class="cart_delete">
-							<a class="cart_quantity_delete" href=""><i class="fa fa-times"></i></a>
-						</td>
-					</tr>
+					@if($cart)
+						@foreach ($cart as $value)
+							<tr>
+								<td class="cart_product">
+									<a href=""><img src="{{asset('/upload/product/'.$value['id_user'].'/hinh85_'. $getArrImage[$value['id']][0]) }}" alt=""></a>
+								</td>
+								<td class="cart_description">
+									<h4><a href="">{{$value['name']}}</a></h4>
+									<p>Web ID: {{$value['id']}}</p>
+								</td>
+								<td class="cart_price">
+									<p>${{ floor($value['price']) }}</p>
+								</td>
+								<td class="cart_quantity">
+									<div class="cart_quantity_button">
+										<!-- <a class="cart_quantity_up" href=""> + </a> -->
+										<input class="cart_quantity_input" type="text" name="quantity" value="{{$value['qty']}}" autocomplete="off" size="2">
+										<!-- <a class="cart_quantity_down" href=""> - </a> -->
+									</div>
+								</td>
+								<td class="cart_total">
+									<p class="cart_total_price">${{ floor($value['price']) * $value['qty'] }}</p>
+								</td>
+								<!-- <td class="cart_delete">
+									<a class="cart_quantity_delete" href=""><i class="fa fa-times"></i></a>
+								</td> -->
+							</tr>
+						@endforeach	
+					@else
+						<div class="text-center mt-5"> 
+							<!-- text-center: Căn giữa nội dung văn bản (text) theo chiều ngang của vùng chứa.
+									"mt-5"     : Thêm khoảng cách trên (margin-top) cho phần tử để nó cách xa phần tử phía trên. -->
+							<h2>There are no products in the cart.</h2>
+							<p>Please return to <a href="{{ url('/product/home') }}">Home</a> page to shop!</p>
+							<img src="{{ asset('Frontend/images/cart/cart-empty.png') }}" alt="Empty Cart" class="img-fluid mt-4" style="max-width: 300px;">
+							<!-- Trong Bootstrap (thư viện CSS phổ biến), các lớp như img-fluid và mt-4 được sử dụng để tạo kiểu cho ảnh và đảm bảo chúng hiển thị đẹp và tương thích trên mọi thiết bị. -->
+						</div>
+					@endif
 					<tr>
 						<td colspan="4">&nbsp;</td>
 						<td colspan="2">
 							<table class="table table-condensed total-result">
 								<tr>
 									<td>Cart Sub Total</td>
-									<td>$59</td>
+									<td> ${{$totalprice}}</td>
 								</tr>
 								<tr>
 									<td>Exo Tax</td>
-									<td>$2</td>
+									<td> ${{round($totalprice * 0.08)}}</td>
 								</tr>
 								<tr class="shipping-cost">
-									<td>Shipping Cost</td>
-									<td>Free</td>										
+									<td>Shipping Cost</td> 
+									<td> Free</td>										
 								</tr>
 								<tr>
 									<td>Total</td>
-									<td><span>$61</span></td>
+									<td><span> ${{$totalprice + round($totalprice * 0.08)}}</span></td>
 								</tr>
+								<!-- <tr>
+									<td><button type="submit" class="">Checkout</button></td>
+								</tr> -->
 							</table>
 						</td>
 					</tr>

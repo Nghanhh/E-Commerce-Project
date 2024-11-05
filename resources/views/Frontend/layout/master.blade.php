@@ -36,7 +36,7 @@
         $currentUrl = url()->current();
     @endphp
     
-    @if(\Illuminate\Support\Str::contains($currentUrl,'blog') || \Illuminate\Support\Str::contains($currentUrl,'product/home'))
+    @if(\Illuminate\Support\Str::contains($currentUrl,'blog') || \Illuminate\Support\Str::contains($currentUrl,'product/home') || \Illuminate\Support\Str::contains($currentUrl,'product/search'))
         <section>    
             <div class="container">
                 <div class="row">

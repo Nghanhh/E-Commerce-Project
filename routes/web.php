@@ -17,18 +17,31 @@
     use App\Http\Controllers\Frontend\ProductController;
     use App\Http\Controllers\Frontend\CartController;
     use App\Http\Controllers\Frontend\SendmailController;
-
+    use App\Http\Controllers\Frontend\SearchController;
 
 
     Route::get('/', function () {
         return view('welcome');
     });
 
+    
+    Route::get('/mail/check', function() {
+        return view('email.index');
+    });
 
-    Route::get('/product/home', [FrontendHome::class,'index']);
+    Route::get('/product/search/advanced', [SearchController::class,'shopadvanced']);
+    Route::get('/product/search/resultadvanced', [SearchController::class,'searchadvanced']);
+    Route::post('/product/search/ajaxSearch', [SearchController::class,'ajaxSearch']);
+
+    Route::get('/product/home', [CartController::class,'home']);
+    Route::post('/product/search', [SearchController::class,'searchname']);
     Route::get('/product/detail/{id}', [ProductController::class,'show']);
     Route::get('/product/checkout', [SendmailController::class,'index']);
+    Route::get('/product/checkout/send', [SendmailController::class,'mail']);
     
+    Route::group(['prefix' => 'checkout'], function () {
+        Route::post('/register', [RegisterController::class,'store']);
+    });
     
     Route::group(['prefix' => 'account'], function () {
 
@@ -73,29 +86,14 @@
     });
 
 
-   
-   
-
-
-
-
-
-
-
-
-
-
-
-
-
     /* ----------------------------------------------------------------------------------------------------- */
-    Route::group(['prefix' => 'admin','middleware' => ['guest']], function () {
+    Route::group(['prefix' => 'admin'], function () {
         Auth::routes(); // Các route như /login, /register sẽ trở thành /admin/login, /admin/register
     });
 
-    Route::group(['prefix' => 'admin', 'middleware' => ['auth']], function () {
+    Route::group(['prefix' => 'admin', 'middleware' => ['admin']], function () {
 
-        Route::get('/home', [App\Http\Controllers\Admin\AdminHome::class, 'index'])->name('home');
+        Route::get('/home', [App\Http\Controllers\Admin\HomeController::class, 'index'])->name('home');
 
         Route::get('/pages', [AdminUser::class,'edit']);
         Route::post('/pages', [AdminUser::class,'update']);

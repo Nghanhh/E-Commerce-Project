@@ -32,8 +32,8 @@
 										<h4><a href="">{{$value['name']}}</a></h4>
 										<p>Web ID: {{$value['id']}}</p>
 									</td>
-									<td class="cart_price" id="{{ number_format($value['price'], 0)}}">
-										<p>${{ number_format($value['price'], 0)}}</p>
+									<td class="cart_price" id="{{ floor($value['price']) }}">
+										<p>${{ floor($value['price']) }}</p>
 									</td>
 									<td class="cart_quantity">
 										<div class="cart_quantity_button">
@@ -44,7 +44,7 @@
 									</td>
 									<td class="cart_total">
 										<p class="cart_total_price">
-											${{ number_format($value['price'] * $value['qty'], 0) }}
+											${{ floor($value['price']) * $value['qty'] }}
 										</p>
 									</td>
 									<td class="cart_delete">
@@ -132,9 +132,9 @@
 					<div class="total_area">
 						<ul>
 							<li class="cart-sub-total">Cart Sub Total <span  class="cart-sub-total">${{$totalprice}}</span></li>
-							<li>Eco Tax <span>$2</span></li>
+							<li  >Eco Tax <span class="eco-tax">${{round($totalprice * 0.08)}}</span></li>
 							<li>Shipping Cost <span>Free</span></li>
-							<li>Total <span class="withtax">${{$totalprice + ($totalprice * 0.08)}}</span></li>
+							<li>Total <span class="withtax">${{$totalprice + round($totalprice * 0.08)}}</span></li>
 						</ul>
 							<a class="btn btn-default update" href="">Update</a>
 							<a class="btn btn-default check_out" href="">Check Out</a>
@@ -167,10 +167,13 @@
 							id : back['product_id'],
 						},
 					success:function(data){
-						//console.log (data.total)
+						
 						$('span.cart-sub-total').text('$' + data.totalprice);
 						$('#cart-count').text(data.total);
-						$('.withtax').text('$' + (data.total * 1.08));
+						$('.eco-tax').text('$' + Math.round((data.totalprice * 0.08)));
+						$('.withtax').text('$' + Math.round((data.totalprice * 1.08)));
+
+						//console.log (data);
 						
 					}
 				}); 
@@ -196,7 +199,9 @@
 					success:function(data){
 						$('span.cart-sub-total').text('$' + data.totalprice);
 						$('#cart-count').text(data.total);
-						$('.withtax').text('$' + (data.total * 1.08));
+						$('.eco-tax').text('$' + Math.round((data.totalprice * 0.08)));
+						$('.withtax').text('$' + Math.round((data.totalprice * 1.08)));
+
 					} 
 					}); 
 			})
@@ -248,10 +253,11 @@
 			//Lấy id của sản phẩm được cộng thêm
 				var product_id = $(element).closest('tr').find('td.cart_description').attr('id');
 			//Lấy giá cái mới tăng số lượng
-				var price = $(element).closest('tr').find('td.cart_price').attr('id');
+				var price = $(element).closest('tr').find('td.cart_price').attr('id'); 
 				//console.log(price);
 			//Tính tổng 
 				var total = newqty * price;
+				//console.log(total);
 			//Bỏ lên trên kia nha
 				$(element).closest('tr').find('td.cart_total p').text('$'+ total); 
 			

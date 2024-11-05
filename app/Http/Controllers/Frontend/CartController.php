@@ -13,13 +13,41 @@ class CartController extends Controller
     /**
      * Display a listing of the resource.
      */
+    public function home()
+    {
+        $total = null;
+        //dd(session('cart', []));
+        if(Auth::check()){
+            $cart = session('cart', []);
+            if($cart){
+                $returnarr = $this->total(0,$cart);
+                $total = $returnarr[0];
+            }
+        }
+
+        
+
+        $product = Product::orderBy('id','desc')->paginate(6);
+        $data = Product::orderBy('id', 'desc')->get();
+        $imgarr = [];
+        foreach($data as $value){
+            $imgarrs = json_decode($value->images, true);  
+            $imgarr[$value->id] = $imgarrs[0];
+            
+        } 
+        return view('Frontend.product.shop',compact('product','imgarr','total'));
+
+    }
+    /**
+     * Display a listing of the resource.
+     */
     public function index()
     {
         if(Auth::check()){
             $cart = session('cart', []);
 
             $returnarr = $this->total(0,$cart);
-            //var_dump ($returnarr);
+            //var_dump ($cart);
             $productincart = $cart;
             $getArrImage = $returnarr[2];
             $total = $returnarr[0];
@@ -27,7 +55,7 @@ class CartController extends Controller
             return view('Frontend.cart.cart',compact('productincart','getArrImage','total','totalprice'));
         }else{
 
-            return redirect('/member/login');
+            return redirect('/member/login'); 
 
         }
     }

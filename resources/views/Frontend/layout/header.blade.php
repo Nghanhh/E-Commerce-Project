@@ -67,7 +67,7 @@
 								@endauth
 
 								<li><a href=""><i class="fa fa-star"></i> Wishlist</a></li>
-								<li><a href="checkout.html"><i class="fa fa-crosshairs"></i> Checkout</a></li>
+								<li><a href="{{url('product/checkout')}}"><i class="fa fa-crosshairs"></i> Checkout</a></li>
 
 								@auth 
 									<li style="position: relative;"><a href="{{url('account/cart/list')}}">
@@ -102,7 +102,7 @@
 						</div>
 						<div class="mainmenu pull-left">
 							<ul class="nav navbar-nav collapse navbar-collapse">
-								<li><a href="index.html">Home</a></li>
+								<li><a href="{{ url('/product/home') }}">Home</a></li>
 								<li class="dropdown"><a href="#">Shop<i class="fa fa-angle-down"></i></a>
                                     <ul role="menu" class="sub-menu">
                                         <li><a href="shop.html">Products</a></li>
@@ -120,12 +120,19 @@
                                 </li> 
 								<li><a href="404.html">404</a></li>
 								<li><a href="contact-us.html">Contact</a></li>
+								<li><a href="{{ url('/product/search/advanced') }}">Search advanced</a></li>
 							</ul>
 						</div>
 					</div>
 					<div class="col-sm-3">
-						<div class="search_box pull-right">
-							<input type="text" placeholder="Search"/>
+						<div class="pull-right">
+							<form action="{{ url('/product/search') }}" method="post" style="display: flex; align-items: center; position: relative; width: 100%; ">
+							@csrf
+								<input type="text" placeholder="Search" name="search" style="flex: 1; padding: 5px 5px 5px 5px; border: 1px solid #ccc; border-radius: 5px; outline: none; transition: 0.2s ease-in;"/>
+								<button type="submit" style="position: absolute; top: 5px; right: 5px; background-color: orange; border: none; ">
+									<i class="fa fa-search" style="font-size: 16px; color: rgba(0, 0, 0, 0.3); font-weight: 50;"></i>
+								</button>
+							</form>
 						</div>
 					</div>
 				</div>

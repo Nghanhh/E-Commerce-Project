@@ -21,8 +21,6 @@ class LoginController extends Controller
         }
         // var_dump(Auth::check());
         return view("Frontend.member.login");
-        //dd (session('url.intended'));
-        //return redirect()->back();
     }
     
     
@@ -55,22 +53,24 @@ class LoginController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function logout()
+    public function logout(Request $request)
     {
-        //$currentUrl = url()->current();
-        //echo $currentUrl;
+
+        Auth::logout();
+        $request->session()->forget('cart');
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
 
         if(Str::contains(url()->current(),'member')){
-            Auth::logout(); // Đăng xuất người dùng
+            // Đăng xuất người dùng
             return redirect()->back(); 
-            //echo "hello";
         }
 
         if(Str::contains(url()->current(),'account')){
-            Auth::logout(); // Đăng xuất người dùng
             return redirect('/member/login'); 
         }
 
+        return redirect('/login')->with('message', 'You have been logged out.');
     }
 
 

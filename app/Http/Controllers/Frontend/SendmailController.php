@@ -4,6 +4,13 @@ namespace App\Http\Controllers\Frontend;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Models\Country;
+use App\Mail\MailNotify;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Auth;
+//Import facade Mail từ Laravel để sử dụng các hàm tiện ích liên quan đến gửi email.
+//Facade Mail đại diện cho service gửi mail trong Laravel và cho phép gọi các phương
+//thức gửi email như send(), to(), hoặc queue().
 
 class SendmailController extends Controller
 {
@@ -12,15 +19,65 @@ class SendmailController extends Controller
      */
     public function index()
     {
-        return view('Frontend.sendmail.checkout');
+        $cart = session('cart', []);
+        $returnarr = $this->total(0,$cart);
+        $getArrImage = $returnarr[2];
+        $total = $returnarr[0];
+        $totalprice = $returnarr[1];
+        
+        $country = Country::all()->toArray();
+        
+        if(Auth::check() && $cart){
+            $userEmail = Auth::user()->email; // Lấy email của người dùng đã đăng nhập
+            $data = [
+                'subject' => 'Here is your shopping cart information, please check and confirm.',
+                'body'    => $cart,
+                'total'   => [$total, $totalprice]
+            ];
+            //dd ($data);
+                try {
+                    Mail::to($userEmail)->send(new MailNotify($data));
+                    // Trả về view với thông báo thành công
+                    return view('Frontend.sendmail.checkout', compact(
+                        'country', 'cart', 'getArrImage', 'total', 'totalprice'
+                    ))->with('message', 'Great! Check your mailbox.');
+                    
+                }catch (Exception $th){
+                    // Trả về view với thông báo lỗi
+                    return view('Frontend.sendmail.checkout', compact(
+                        'country', 'cart', 'getArrImage', 'total', 'totalprice'
+                    ))->with('error', 'Sorry, something went wrong.');
+                } 
+            
+        }else{
+            return view('Frontend.sendmail.checkout',compact('country','cart','getArrImage','total','totalprice'));
+        }
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Calculate the total quantity and amount of products.
      */
-    public function create()
+    public function total($x, $cart){
+
+        //Tính tổng số ảnh
+        $getArrImage = [];
+        $totalprice = 0;
+        $counttotal = 0;
+        foreach($cart as $value){
+            if($x==0){
+                $getArrImage[$value["id"]] = json_decode($value['images'], true);  
+            }
+            $totalprice = $totalprice + ($value['qty'] * $value['price']);
+            $counttotal = $counttotal + $value['qty'];
+        } 
+        return $x == 0 ? [$counttotal, $totalprice, $getArrImage] : [$counttotal, $totalprice];
+    }
+
+    /**
+     * Send mail.
+     */
+    public function mail()
     {
-        //
     }
 
     /**

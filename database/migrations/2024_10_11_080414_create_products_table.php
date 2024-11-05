@@ -13,16 +13,12 @@ return new class extends Migration
     {
         Schema::create('products', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->unsignedBigInteger('id_user');
+            $table->text('email');
+            $table->string('phone');
             $table->text('name');
-            $table->decimal('price', 10, 5);
-            $table->unsignedBigInteger('id_category');
-            $table->unsignedBigInteger('id_brand');
-            $table->integer('status')->default(1);
-            $table->integer('sale')->default(0)->comment('Sale percentage (0-100)');
-            $table->string('company');
-            $table->text('images');
-            $table->text('detail');
+            $table->unsignedBigInteger('id_user');
+            $table->decimal('price', 20, 2);
+            $table->timestamps();
         });
         
     }

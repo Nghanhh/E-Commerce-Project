@@ -31,7 +31,6 @@ class ProductController extends Controller
             }
 
             $productincart = session('cart', []); 
-            $getArrImage = [];
             $total = 0;
             if($productincart){
                 foreach($productincart as $value){
@@ -96,7 +95,6 @@ class ProductController extends Controller
     {
         $product = Product::findOrFail($id)->toArray();
         
-        //chỗ ni liên kết khóa ngoại thì có nhanh hơn không ta
         $brand = Brand::find($product['id_brand']);
         $imgarr = json_decode($product['images'],true);
         
